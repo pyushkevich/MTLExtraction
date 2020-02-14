@@ -21,45 +21,40 @@
 void Test(std::string Createdfolder) {
 	std::string file;
 	std::size_t find_hem, find_finalmtl, find_mtl1, find_mtl2, find_roi, find_molds, find_cuts1, find_cuts2, find_oriented;
+	DIR* dir;
+	struct dirent* ent;
 
-	for (const auto& entry : std::filesystem::directory_iterator(Createdfolder)) {
-		file = entry.path().string();
-		for (auto& c : file) { c = tolower(c); }
-
-		//find_hem = file.find("hemisphere");
-		find_finalmtl = file.find("finalmtl");
-		find_mtl1 = file.find("/mtl.");
-		find_mtl2 = file.find("\\mtl.");
-		find_roi = file.find("roi");
-		find_molds = file.find("slitmold");
-		find_cuts1 = file.find("/cut");
-		find_cuts2 = file.find("\\cut");
-		find_oriented = file.find("oriented");
-
-
-		if ((find_mtl1 & find_mtl2 & find_roi & find_molds & find_cuts1 & find_cuts2 & find_oriented) == std::string::npos) {
-			
-			try { 
-				std::cout << "File : " << file << " removed." << std::endl;
-				remove(entry.path()); 
-			}
-			catch (std::filesystem::filesystem_error & error){
-				//std::cerr << "Error: " << error << std::endl;
-				std::cerr << "Error deleting " << file << std::endl;
+	if ((dir = opendir(Createdfolder.c_str())) != NULL) {
+		while ((ent = readdir(dir)) != NULL) {
+			file = Createdfolder + "/" + std::string(ent->d_name);			
+			for (auto& c : file) { c = tolower(c); }
+			find_finalmtl = file.find("finalmtl");
+			find_mtl1 = file.find("/mtl.");
+			find_mtl2 = file.find("\\mtl.");
+			find_roi = file.find("roi");
+			find_molds = file.find("slitmold");
+			find_cuts1 = file.find("/cut");
+			find_cuts2 = file.find("\\cut");
+			find_oriented = file.find("oriented");
+			if ((find_finalmtl & find_mtl1 & find_mtl2 & find_roi & find_molds & find_cuts1 & find_cuts2 & find_oriented) == std::string::npos) {		
+				if (remove(file.c_str()) != 0)
+					perror("Error deleting file");
+					std::cout << std::string(ent->d_name) << std::endl;
 			}
 		}
+		closedir(dir);
 	}
-	std::cout << "\nFiles kept:" << std::endl;
-	for (const auto& entry : std::filesystem::directory_iterator(Createdfolder)) {
-		std::cout << entry.path().string() << std::endl;
+	else {
+		/* could not open directory */
+		perror("");
 	}
 	exit(0);
 }
 */
 
 int main(int argc, char* argv[]) {
-	argv[1] = "U:/Files_for_Automatisation/INDD118374L";
-	// Test(std::string(argv[1]));
+	// argv[1] = "U:/Files_for_Automatisation/INDD118374L";
+	Test(std::string(argv[1]));
 
 	std::chrono::duration<double> t_total;
 	std::chrono::time_point<std::chrono::system_clock> start_prog, end_prog;
@@ -116,9 +111,9 @@ int main(int argc, char* argv[]) {
 	#elif defined(UNIX)
 	DIR* dir;
 	struct dirent* ent;
-	if ((dir = opendir(folder)) != NULL) {
+	if ((dir = opendir(folder.c_str())) != NULL) {
 		while ((ent = readdir(dir)) != NULL) {
-			std::size_t find_hem = ent->d_name.find("roi_seg");
+			std::size_t find_hem = std::string(ent->d_name).find("roi_seg");
 			if (find_hem != std::string::npos) {
 				roiSeg = ReadImage(folder + "/roi_seg.nii.gz");
 				add_roi = true;
@@ -231,7 +226,7 @@ int main(int argc, char* argv[]) {
 		find_oriented = file.find("oriented");
 
 
-		if ((find_mtl1 & find_mtl2 & find_roi & find_molds & find_cuts1 & find_cuts2 & find_oriented) == std::string::npos) {
+		if ((find_finalmtl & find_mtl1 & find_mtl2 & find_roi & find_molds & find_cuts1 & find_cuts2 & find_oriented) == std::string::npos) {
 			try {
 				std::cout << "File : " << file << " removed." << std::endl;
 				remove(entry.path());
@@ -243,10 +238,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	#elif defined(UNIX)
-
-	DIR* dir;
-	struct dirent* ent;
-	if ((dir = opendir(Createdfolder)) != NULL) {
+	if ((dir = opendir(Createdfolder.c_str())) != NULL) {
 		while ((ent = readdir(dir)) != NULL) {
 			file = std::string(ent->d_name);
 			for (auto& c : file) { c = tolower(c); }
@@ -258,11 +250,12 @@ int main(int argc, char* argv[]) {
 			find_cuts1 = file.find("/cut");
 			find_cuts2 = file.find("\\cut");
 			find_oriented = file.find("oriented");
-			if ((find_mtl1 & find_mtl2 & find_roi & find_molds & find_cuts1 & find_cuts2 & find_oriented) == std::string::npos) {
-				if (remove(ent->d_name) != 0)
-					perror("Error deleting file");
-				else
-					puts("File successfully deleted");
+			if ((find_finalmtl & find_mtl1 & find_mtl2 & find_roi & find_molds & find_cuts1 & find_cuts2 & find_oriented) == std::string::npos) {
+				std::cout << file << " should be removed." << std::endl;			
+				// if (remove(ent->d_name) != 0)
+				// 	perror("Error deleting file");
+				// else
+				// 	puts("File successfully deleted");
 			}
 		}
 		closedir(dir);
