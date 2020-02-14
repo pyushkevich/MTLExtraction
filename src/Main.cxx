@@ -1,10 +1,13 @@
 #include <iostream>
-#include <filesystem>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#define WIN
 	#include <direct.h>
+	#include <filesystem>
 #elif defined(__APPLE__) || defined(__linux__) || defined(__unix__)
+#define UNIX
 	#include <sys/stat.h>
+	#include <dirent.h>
 #else
 	#error "Unknown compiler"
 #endif
@@ -14,6 +17,7 @@
 #include "PadImage.h"
 #include "WriteImage.h"
 
+/*
 void Test(std::string Createdfolder) {
 	std::string file;
 	std::size_t find_hem, find_finalmtl, find_mtl1, find_mtl2, find_roi, find_molds, find_cuts1, find_cuts2, find_oriented;
@@ -51,6 +55,7 @@ void Test(std::string Createdfolder) {
 	}
 	exit(0);
 }
+*/
 
 int main(int argc, char* argv[]) {
 	argv[1] = "U:/Files_for_Automatisation/INDD118374L";
@@ -73,7 +78,7 @@ int main(int argc, char* argv[]) {
 	//___________________________________________________________________________________________
 	std::string Createdfolder = std::string(argv[1]) + "/Files";
 
-	#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+	#if defined(WIN)
 	if (mkdir(Createdfolder.c_str()) != 0) { std::cout << strerror(errno) << std::endl; }
 	#else
 	if (mkdir(Createdfolder.c_str(), S_IRWXU) != 0) { std::cout << strerror(errno) << std::endl; }
@@ -97,6 +102,8 @@ int main(int argc, char* argv[]) {
 	ImagePointer mtlSeg = ReadImage(folder + "/mtl_seg.nii.gz");
 	ImagePointer roiSeg; 
 	bool add_roi = false;
+
+	#if defined(WIN)
 	// Read the segmentation of another ROI to preserve, if it exists
 	for (const auto& entry : std::filesystem::directory_iterator(folder)) {
 		std::size_t find_hem = entry.path().string().find("roi_seg");
@@ -106,6 +113,27 @@ int main(int argc, char* argv[]) {
 			break;
 		}
 	}
+	#elif defined(UNIX)
+	DIR* dir;
+	struct dirent* ent;
+	if ((dir = opendir(folder)) != NULL) {
+		while ((ent = readdir(dir)) != NULL) {
+			std::size_t find_hem = ent->d_name.find("roi_seg");
+			if (find_hem != std::string::npos) {
+				roiSeg = ReadImage(folder + "/roi_seg.nii.gz");
+				add_roi = true;
+				break;
+			}
+		}
+		closedir(dir);
+	}
+	else {
+		/* could not open directory */
+		perror("");
+		return EXIT_FAILURE;
+	}
+	#endif
+	
 	
 	
 		
@@ -184,9 +212,11 @@ int main(int argc, char* argv[]) {
 	//___________________________________________________________________________________________
 	//________________________________________Cleaning___________________________________________
 	//___________________________________________________________________________________________
+
 	std::string file;
 	std::size_t find_hem, find_finalmtl, find_mtl1, find_mtl2, find_roi, find_molds, find_cuts1, find_cuts2, find_oriented;
 
+	#if defined(WIN)
 	for (const auto& entry : std::filesystem::directory_iterator(Createdfolder)) {
 		file = entry.path().string();
 		for (auto& c : file) { c = tolower(c); }
@@ -202,7 +232,6 @@ int main(int argc, char* argv[]) {
 
 
 		if ((find_mtl1 & find_mtl2 & find_roi & find_molds & find_cuts1 & find_cuts2 & find_oriented) == std::string::npos) {
-
 			try {
 				std::cout << "File : " << file << " removed." << std::endl;
 				remove(entry.path());
@@ -213,7 +242,38 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	}
+	#elif defined(UNIX)
 
+	DIR* dir;
+	struct dirent* ent;
+	if ((dir = opendir(Createdfolder)) != NULL) {
+		while ((ent = readdir(dir)) != NULL) {
+			file = std::string(ent->d_name);
+			for (auto& c : file) { c = tolower(c); }
+			find_finalmtl = file.find("finalmtl");
+			find_mtl1 = file.find("/mtl.");
+			find_mtl2 = file.find("\\mtl.");
+			find_roi = file.find("roi");
+			find_molds = file.find("slitmold");
+			find_cuts1 = file.find("/cut");
+			find_cuts2 = file.find("\\cut");
+			find_oriented = file.find("oriented");
+			if ((find_mtl1 & find_mtl2 & find_roi & find_molds & find_cuts1 & find_cuts2 & find_oriented) == std::string::npos) {
+				if (remove(ent->d_name) != 0)
+					perror("Error deleting file");
+				else
+					puts("File successfully deleted");
+			}
+		}
+		closedir(dir);
+	}
+	else {
+		/* could not open directory */
+		perror("");
+		return EXIT_FAILURE;
+	}
+
+	#endif
 
 	std::cout << "\n***All files have been created for " << argv[1] << "***" << std::endl << std::endl;
 
