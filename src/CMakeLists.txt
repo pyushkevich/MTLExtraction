@@ -23,10 +23,3 @@ target_link_libraries(MTLExtraction PUBLIC ${ITK_LIBRARIES} lib)
 
 # Indique que l'on installe l'exécutable dans un dossier bin
 install (TARGETS MTLExtraction RUNTIME DESTINATION build)
-
-# Section CPack
-set(CPACK_NSIS_MODIFY_PATH ON)
-set(CPACK_RPM_COMPONENT_INSTALL ON)
-set(CPACK_COMPONENTS_GROUPING "ALL_COMPONENTS_IN_ONE")
-set(CPACK_PACKAGE_FILE_NAME "MTLExtraction")
-include (CPack)
