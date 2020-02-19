@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(MTLExtraction)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find ITK.
@@ -21,5 +21,4 @@ add_executable(MTLExtraction Main.cxx)
 
 target_link_libraries(MTLExtraction PUBLIC ${ITK_LIBRARIES} lib)
 
-# Indique que l'on installe l'exécutable dans un dossier bin
-install (TARGETS MTLExtraction RUNTIME DESTINATION build)
+install (TARGETS MTLExtraction RUNTIME DESTINATION C:/Users/jadel/bin)

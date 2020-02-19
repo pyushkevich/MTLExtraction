@@ -21,97 +21,97 @@
 
 int OptimizationMethod(std::string folder){
 
-	// ImagePointer mtlSeg = ReadImage(folder + "/mtl_seg.nii.gz");
-	// ImagePointer roiSeg; 
-	// bool add_roi = false;
+	 ImagePointer mtlSeg = ReadImage(folder + "/mtl_seg.nii.gz");
+	 ImagePointer roiSeg; 
+	 bool add_roi = false;
 
-	// #if defined(WIN)
-	// // Read the segmentation of another ROI to preserve, if it exists
-	// for (const auto& entry : std::filesystem::directory_iterator(folder)) {
-	// 	std::size_t find_hem = entry.path().string().find("roi_seg");
-	// 	if (find_hem != std::string::npos) {
-	// 		roiSeg = ReadImage(folder + "/roi_seg.nii.gz");
-	// 		add_roi = true;
-	// 		break;
-	// 	}
-	// }
-	// #elif defined(UNIX)
-	// DIR* dir;
-	// struct dirent* ent;
-	// if ((dir = opendir(folder.c_str())) != NULL) {
-	// 	while ((ent = readdir(dir)) != NULL) {
-	// 		std::size_t find_hem = std::string(ent->d_name).find("roi_seg");
-	// 		if (find_hem != std::string::npos) {
-	// 			roiSeg = ReadImage(folder + "/roi_seg.nii.gz");
-	// 			add_roi = true;
-	// 			break;
-	// 		}
-	// 	}
-	// 	closedir(dir);
-	// }
-	// #endif
+	 #if defined(WIN)
+	 // Read the segmentation of another ROI to preserve, if it exists
+	 for (const auto& entry : std::filesystem::directory_iterator(folder)) {
+	 	std::size_t find_hem = entry.path().string().find("roi_seg");
+	 	if (find_hem != std::string::npos) {
+	 		roiSeg = ReadImage(folder + "/roi_seg.nii.gz");
+	 		add_roi = true;
+	 		break;
+	 	}
+	 }
+	 #elif defined(UNIX)
+	 DIR* dir;
+	 struct dirent* ent;
+	 if ((dir = opendir(folder.c_str())) != NULL) {
+	 	while ((ent = readdir(dir)) != NULL) {
+	 		std::size_t find_hem = std::string(ent->d_name).find("roi_seg");
+	 		if (find_hem != std::string::npos) {
+	 			roiSeg = ReadImage(folder + "/roi_seg.nii.gz");
+	 			add_roi = true;
+	 			break;
+	 		}
+	 	}
+	 	closedir(dir);
+	 }
+	 #endif
 	
 	
 		
-	// //___________________________________________________________________________________________
-	// //________________________________________Treatments_________________________________________
-	// //___________________________________________________________________________________________
+	 //___________________________________________________________________________________________
+	 //________________________________________Treatments_________________________________________
+	 //___________________________________________________________________________________________
 
-	// ImageType::SizeType padExtent; padExtent.Fill(50);
+	 ImageType::SizeType padExtent; padExtent.Fill(50);
 
-	// ImagePointer m_hem = ReadImage("hemisphere.nii.gz");
-	// ImagePointer m_mtl = PadImage(mtlSeg, padExtent, padExtent, 0);
-	// Write("mtl_seg.nii.gz", m_mtl);
+	 ImagePointer m_hem = ReadImage("hemisphere.nii.gz");
+	 ImagePointer m_mtl = PadImage(mtlSeg, padExtent, padExtent, 0);
+	 Write("mtl_seg.nii.gz", m_mtl);
 
-	// if (add_roi) {
-	// 	ImagePointer m_roi = PadImage(roiSeg, padExtent, padExtent, 0);
-	// 	Write("roi_seg.nii.gz", m_roi);
-	// }
+	 if (add_roi) {
+	 	ImagePointer m_roi = PadImage(roiSeg, padExtent, padExtent, 0);
+	 	Write("roi_seg.nii.gz", m_roi);
+	 }
 
-	// // If there is no other ROI to preserve, the first plan is replaced by a 3D image with the single value 1, 
-	// // so it won't impact other cuts
-	// ImagePointer plan0 = m_hem;
-	// plan0->FillBuffer(1);
-	// Write("plan0.nii.gz", plan0);
-	// ImagePointer cut0 = m_hem;
-	// cut0->FillBuffer(0);
-	// Write("cut0.nii.gz", cut0);
+	 // If there is no other ROI to preserve, the first plan is replaced by a 3D image with the single value 1, 
+	 // so it won't impact other cuts
+	 ImagePointer plan0 = m_hem;
+	 plan0->FillBuffer(1);
+	 Write("plan0.nii.gz", plan0);
+	 ImagePointer cut0 = m_hem;
+	 cut0->FillBuffer(0);
+	 Write("cut0.nii.gz", cut0);
 
-	// //___________________________________________________________________________________________
-	// //_______________________________________Optimisation________________________________________
-	// //___________________________________________________________________________________________
+	 //___________________________________________________________________________________________
+	 //_______________________________________Optimisation________________________________________
+	 //___________________________________________________________________________________________
 
-	// std::chrono::duration<double> duration1, duration2, duration3;
+	 std::chrono::duration<double> duration1, duration2, duration3;
 
-	// std::chrono::time_point<std::chrono::system_clock> start, end;
+	 std::chrono::time_point<std::chrono::system_clock> start, end;
 
   
-    // start = std::chrono::system_clock::now();
-	// std::cout << "Orienting cylinder..." << std::endl;
-	// OrientationCylinderPowell();
-    // end = std::chrono::system_clock::now(); 
+     start = std::chrono::system_clock::now();
+	 std::cout << "Orienting cylinder..." << std::endl;
+	 OrientationCylinderPowell();
+     end = std::chrono::system_clock::now(); 
   
-    // duration1 = (end - start) / 60; //in minutes
-	// std::cout << "\n		Orienting cylinder took " << duration1.count() << "min." << std::endl;
+     duration1 = (end - start) / 60; //in minutes
+	 std::cout << "\n		Orienting cylinder took " << duration1.count() << "min." << std::endl;
 
-	// if (add_roi == true) {
-	// 	start = std::chrono::system_clock::now();
-	// 	std::cout << "Orienting first cut..." << std::endl;
-	// 	OrientationFirstCutPowell();
-	// 	end = std::chrono::system_clock::now(); 
+	 if (add_roi == true) {
+	 	start = std::chrono::system_clock::now();
+	 	std::cout << "Orienting first cut..." << std::endl;
+	 	OrientationFirstCutPowell();
+	 	end = std::chrono::system_clock::now(); 
   
-	// 	duration2 = (end - start) / 60; //in minutes
-	// 	std::cout << "\n		Finding the first cut took " << duration2.count() << "min." << std::endl;
-	// }
+	 	duration2 = (end - start) / 60; //in minutes
+	 	std::cout << "\n		Finding the first cut took " << duration2.count() << "min." << std::endl;
+	 }
 	
-    // start = std::chrono::system_clock::now();
-	// std::cout << "Orienting cuts..." << std::endl;
-	// OrientationCutsPowell();
-    // end = std::chrono::system_clock::now(); 
+     start = std::chrono::system_clock::now();
+	 std::cout << "Orienting cuts..." << std::endl;
+	 OrientationCutsPowell();
+     end = std::chrono::system_clock::now(); 
   
-    // duration3 = (end - start) / 60; //in minutes
+     duration3 = (end - start) / 60; //in minutes
 
-	// std::cout << "\n		Finding other cuts took " << duration3.count() << "min." << std::endl;
+	 std::cout << "\n		Finding other cuts took " << duration3.count() << "min." << std::endl;
 
 	//___________________________________________________________________________________________
 	//________________________________________Cleaning___________________________________________
@@ -146,8 +146,6 @@ int OptimizationMethod(std::string folder){
 		}
 	}
 	#elif defined(UNIX)
-	DIR* dir;
-	struct dirent* ent;
 	if ((dir = opendir(folder.c_str())) != NULL) {
 		while ((ent = readdir(dir)) != NULL) {
 			file = folder + "/" + std::string(ent->d_name);			
@@ -299,7 +297,7 @@ int ManualMethod(std::string folder){
 		file = entry.path().string();
 		for (auto& c : file) { c = tolower(c); }
 
-		find_finalmtl = file.find("finalmtl")
+		find_finalmtl = file.find("finalmtl");
 		find_mtl = file.find("\\mtl.");
 		find_molds = file.find("slitmold");
 		find_cuts = file.find("\\cut");
