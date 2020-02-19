@@ -111,7 +111,7 @@ public:
 class FirstCutPowellCF : public itk::SingleValuedCostFunction
 {
 public:
-	ImagePointer m_hem   = ReadImage("OrientedHemisphere.nii.gz");
+	ImagePointer m_hem   = ReadImage("OrientedHemisphereSeg.nii.gz");
 	ImagePointer m_mtl   = ReadImage("OrientedMTL.nii.gz");
 	ImagePointer m_fl    = ReadImage("OrientedROI.nii.gz");
 	ImagePointer m_lineN = ReadImage("planN.nii.gz");
@@ -134,12 +134,12 @@ public:
 
 	MeasureType GetValue(const ParametersType& parameters) const override
 	{
-		double tx = parameters[0];
-		double angle_value = parameters[1] * itk::Math::pi_over_180;
+		double angle_value = parameters[0] * itk::Math::pi_over_180;
+		double tx = parameters[1];
 		double opt, penFL, penMTL;
-		ImagePointer cutN = ResliceImage(m_hem, m_lineN, RotationAxis::YROTATION, angle_value, tx, 0.0, 0.0);
-		ImagePointer cutP = ResliceImage(m_hem, m_lineP, RotationAxis::YROTATION, angle_value, tx, 0.0, 0.0);
-
+		ImagePointer cutN = ResliceImage(m_lineN, RotationAxis::YROTATION, angle_value, tx, 0.0, 0.0);
+		ImagePointer cutP = ResliceImage(m_lineP, RotationAxis::YROTATION, angle_value, tx, 0.0, 0.0);
+	
 
 		std::vector<ImagePointer> opt_table;
 		opt_table.push_back(cutN);
@@ -273,8 +273,8 @@ public:
 		penCyl = 0.1 * GetVolume(img_penCyl);
 
 		MeasureType measure = opt + penMTL + penCyl;
-		//std::cout << "\nParameters = " << parameters << "\nVopt = " << opt << "\nVpenMTL = " << GetVolume(img_penMTL)
-		//<< "\nVpenCyl = " << GetVolume(img_penCyl) << "\nMeasure = " << measure << std::endl;
+		// std::cout << "\nParameters = " << parameters << "\nVopt = " << opt << "\nVpenMTL = " << GetVolume(img_penMTL)
+		// << "\nVpenCyl = " << GetVolume(img_penCyl) << "\nMeasure = " << measure << std::endl;
 
 		return measure;
 	}

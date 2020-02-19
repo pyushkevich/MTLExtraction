@@ -6,6 +6,8 @@
 
 ImagePointer CreatePlanN(ImagePointer iref, float width)
 {
+	vnl_matrix_fixed<double, 3U, 3U> dir = iref->GetDirection().GetVnlMatrix();
+
 	RegionType region;
 	const RegionType largestRegion_ref = iref->GetLargestPossibleRegion();
 
@@ -38,10 +40,17 @@ ImagePointer CreatePlanN(ImagePointer iref, float width)
 		{
 			itP.Set(2);
 		}
-		else if (itP.GetIndex()[0] < x_min)
-		{
-			itP.Set(1);
+		if (dir[0][0] == -1){
+			if (itP.GetIndex()[0] < x_min) {
+				itP.Set(1);
+			}
 		}
+		else{
+			if (itP.GetIndex()[0] > x_max) {
+				itP.Set(1);
+			}
+		}
+		
 		++itP;
 	}
 

@@ -7,10 +7,15 @@
 #include "itkAffineTransform.h"
 #include "itkResampleImageFilter.h"
 #include "itkImageMomentsCalculator.h"
+#include "itkMatrixOffsetTransformBase.h"
+#include <itkTransformFactory.h>
+#include <itkTransformFileReader.h>
+#include <itkLinearInterpolateImageFunction.h>
 
 
 ImagePointer ResliceImage(ImagePointer FixeImage, ImagePointer MovingImage, char* FileMatrix);
 ImagePointer ResliceImage(ImagePointer MovingImage, char* FileMatrix);
+ImagePointer ResliceImage(ImagePointer MovingImage, std::string FileMatrix);
 ImagePointer ResliceImage(ImagePointer FixeImage, ImagePointer MovingImage, MatrixType matrix);
 ImagePointer ResliceImage(ImagePointer MovingImage, MatrixType matrix);
 ImagePointer ResliceImage(ImagePointer FixeImage, ImagePointer MovingImage, RotationAxis axis, double angle);

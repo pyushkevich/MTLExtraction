@@ -25,10 +25,10 @@ int OrientationFirstCutPowell() {
 	initialPosition.Fill(0.0);
 
 	itkOptimizer->SetMaximize(true);
-	itkOptimizer->SetStepLength(6);
-	itkOptimizer->SetStepTolerance(1);
-	itkOptimizer->SetValueTolerance(1);
 	itkOptimizer->SetMaximumIteration(2);
+	itkOptimizer->SetStepLength(5);
+	itkOptimizer->SetStepTolerance(0.1);
+	itkOptimizer->SetValueTolerance(0.1);
 
 	itkOptimizer->SetInitialPosition(initialPosition);
 
@@ -46,8 +46,8 @@ int OrientationFirstCutPowell() {
 	}
 
 	ParametersType finalPosition = itkOptimizer->GetCurrentPosition();
-	const double   finalTranslationX = finalPosition[0];
-	const double   finalAngleInDegrees = finalPosition[1];
+	const double   finalAngleInDegrees = finalPosition[0];
+	const double   finalTranslationX = finalPosition[1];
 	
 
 	const unsigned int numberOfIterations = itkOptimizer->GetCurrentIteration();
@@ -55,12 +55,12 @@ int OrientationFirstCutPowell() {
 
 	// Print out results
 	const double finalAngle = finalAngleInDegrees * itk::Math::pi_over_180;
-	//std::cout << "\n\n Result = " << std::endl;
-	//std::cout << " Angle (radians) " << finalAngle << std::endl;
-	//std::cout << " Angle (degrees) " << finalAngleInDegrees << std::endl;
-	//std::cout << " Translation X  = " << finalTranslationX << std::endl;
-	//std::cout << " Iterations     = " << numberOfIterations << std::endl;
-	//std::cout << " Metric value   = " << bestValue << std::endl;
+	// std::cout << "\n\n Result = " << std::endl;
+	// std::cout << " Angle (radians) " << finalAngle << std::endl;
+	// std::cout << " Angle (degrees) " << finalAngleInDegrees << std::endl;
+	// std::cout << " Translation X  = " << finalTranslationX << std::endl;
+	// std::cout << " Iterations     = " << numberOfIterations << std::endl;
+	// std::cout << " Metric value   = " << bestValue << std::endl;
 
 	ImagePointer lineN_sol = ResliceImage(costFunction->m_lineN, RotationAxis::YROTATION, finalAngle, finalTranslationX, 0.0, 0.0);
 	ImagePointer cut = CreateRealCut(lineN_sol);
@@ -106,9 +106,10 @@ int OrientationCutsPowell() {
 
 
 	itkOptimizer->SetCostFunction(costFunction);
-	itkOptimizer->SetMaximumIteration(1);
+	itkOptimizer->SetMaximumIteration(2);
+	itkOptimizer->SetMaximumLineIteration(5);
 	itkOptimizer->SetMaximize(false);
-	itkOptimizer->SetStepLength(6);
+	itkOptimizer->SetStepLength(5);
 	itkOptimizer->SetStepTolerance(1);
 	itkOptimizer->SetValueTolerance(1);
 	

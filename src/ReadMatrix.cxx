@@ -12,7 +12,7 @@ typedef vnl_matrix_fixed<double, 3, 3> Mat3;
 typedef vnl_matrix_fixed<double, 4, 4> Mat4;
 typedef vnl_vector_fixed<double, 3> Vec3;
 
-
+/*
 MatrixType ReadMatrix(const std::string fname)
 {
 	MatrixType mat;
@@ -90,4 +90,23 @@ MatrixType ReadMatrix(const std::string fname)
 	mat.SetRotationAxis();
 	mat.angle = mat.GetAngle();
 	return mat;
+}
+*/
+
+MatrixType ReadMatrix(const std::string fname)
+{
+	MatrixType mat;
+	std::ifstream fin(fname);
+	for(size_t i = 0; i < VDim+1; i++){
+    	for(size_t j = 0; j < VDim+1; j++){
+      		if(fin.good()) {
+        		fin >> mat[i][j];
+        	}
+      		else {
+        		std::cerr << "Unable to read matrix " << fname << std::endl;
+        	}
+		}
+	}
+  	fin.close();
+  	return mat;
 }

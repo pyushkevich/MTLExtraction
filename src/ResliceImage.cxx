@@ -2,78 +2,15 @@
 
 ImagePointer ResliceImage(ImagePointer FixeImage, ImagePointer MovingImage, char* FileMatrix)
 {
-	// Create an initial identity transform
-	typedef itk::AffineTransform<double, VDim> TranType;
-	typename TranType::Pointer atran = TranType::New();
-	atran->SetIdentity();
-
-	// Read the matrix
-	MatrixType matrix;
-	matrix = ReadMatrix(FileMatrix);
-
-	// Get the transform matrix and the offset vector
-	vnl_matrix<double> A_ras = matrix.GetVnlMatrix().extract(VDim, VDim);
-	vnl_vector<double> b_ras = matrix.GetVnlMatrix().extract(VDim, 1, 0, VDim).get_column(0);
-
-	// External matrices are assumed to be RAS to RAS, so we must convert to LPS to LPS
-	vnl_vector<double> v_lps_to_ras(VDim, 1.0);
-	v_lps_to_ras[0] = v_lps_to_ras[1] = -1.0;
-	vnl_diag_matrix<double> m_lps_to_ras(v_lps_to_ras);
-	vnl_matrix<double> A_lps = m_lps_to_ras * A_ras * m_lps_to_ras;
-	vnl_vector<double> b_lps = m_lps_to_ras * b_ras;
-
-	// Stick these into the itk matrix/vector
-	itk::Matrix<double, VDim, VDim> amat(A_lps);
-	itk::Vector<double, VDim> aoff;
-	aoff.SetVnlVector(b_lps);
-
-	// Put the values in the transform
-	atran->SetMatrix(amat);
-	atran->SetOffset(aoff);
-
-	// Build the resampling filter
-	typedef itk::ResampleImageFilter<ImageType, ImageType> ResampleFilterType;
-	typename ResampleFilterType::Pointer fltSample = ResampleFilterType::New();
-
-	// Initialize the resampling filter with an identity transform
-	fltSample->SetInput(MovingImage);
-	fltSample->SetTransform(atran);
-
-	// Set the unknown intensity to positive value
-	fltSample->SetDefaultPixelValue(0);
-
-	// Set the interpolator
-	using FixedLinearInterpolatorType = itk::LinearInterpolateImageFunction<ImageType, double>;
-	fltSample->SetInterpolator(FixedLinearInterpolatorType::New());
-
-	// Calculate where the transform is taking things
-	itk::ContinuousIndex<double, VDim> idx[3];
-	idx->Fill(0.0);
-	for (size_t i = 0; i < VDim; i++)
-	{
-		idx[0][i] = 0.0;
-		idx[1][i] = FixeImage->GetBufferedRegion().GetSize(i) / 2.0;
-		idx[2][i] = FixeImage->GetBufferedRegion().GetSize(i) - 1.0;
-	}
-	for (size_t j = 0; j < VDim; j++)
-	{
-		itk::ContinuousIndex<double, VDim> idxmov;
-		itk::Point<double, VDim> pref, pmov;
-		FixeImage->TransformContinuousIndexToPhysicalPoint(idx[j], pref);
-		pmov = atran->TransformPoint(pref);
-		MovingImage->TransformPhysicalPointToContinuousIndex(pmov, idxmov);
-	}
-
-
-	// Set the spacing, origin, direction of the output
-	fltSample->UseReferenceImageOn();
-	fltSample->SetReferenceImage(FixeImage);
-	fltSample->Update();
-
-	return fltSample->GetOutput();
+	return ResliceImage(MovingImage, std::string(FileMatrix));
 }
 
 ImagePointer ResliceImage(ImagePointer MovingImage, char* FileMatrix)
+{
+	return ResliceImage(MovingImage, std::string(FileMatrix));
+}
+
+ImagePointer ResliceImage(ImagePointer MovingImage, std::string FileMatrix)
 {
 	ImagePointer FixeImage = MovingImage;
 	// Create an initial identity transform
@@ -81,68 +18,101 @@ ImagePointer ResliceImage(ImagePointer MovingImage, char* FileMatrix)
 	typename TranType::Pointer atran = TranType::New();
 	atran->SetIdentity();
 
-	// Read the matrix
-	MatrixType matrix;
-	matrix = ReadMatrix(FileMatrix);
+	// Read transform based on type
+	size_t mat, txt;
+	mat = FileMatrix.find(".mat");
+	txt = FileMatrix.find(".txt");
 
-	// Get the transform matrix and the offset vector
-	vnl_matrix<double> A_ras = matrix.GetVnlMatrix().extract(VDim, VDim);
-	vnl_vector<double> b_ras = matrix.GetVnlMatrix().extract(VDim, 1, 0, VDim).get_column(0);
+  	if(txt != std::string::npos)
+    {
+		typedef itk::MatrixOffsetTransformBase<double, VDim, VDim> MOTBType;
+		typedef itk::AffineTransform<double, VDim> AffTran;
+		itk::TransformFactory<MOTBType>::RegisterTransform();
+		itk::TransformFactory<AffTran>::RegisterTransform();
 
-	// Extrernal matrices are assumed to be RAS to RAS, so we must convert to LPS to LPS
-	vnl_vector<double> v_lps_to_ras(VDim, 1.0);
-	v_lps_to_ras[0] = v_lps_to_ras[1] = -1.0;
-	vnl_diag_matrix<double> m_lps_to_ras(v_lps_to_ras);
-	vnl_matrix<double> A_lps = m_lps_to_ras * A_ras * m_lps_to_ras;
-	vnl_vector<double> b_lps = m_lps_to_ras * b_ras;
+		itk::TransformFileReader::Pointer fltReader = itk::TransformFileReader::New();
+		fltReader->SetFileName(FileMatrix);
+		fltReader->Update();
 
-	// Stick these into the itk matrix/vector
-	itk::Matrix<double, VDim, VDim> amat(A_lps);
-	itk::Vector<double, VDim> aoff;
-	aoff.SetVnlVector(b_lps);
+		itk::TransformBase *base = fltReader->GetTransformList()->front();
+		MOTBType *motb = dynamic_cast<MOTBType *>(base);
 
-	// Put the values in the transform
-	atran->SetMatrix(amat);
-	atran->SetOffset(aoff);
+		if(motb)
+		{
+			atran->SetMatrix(motb->GetMatrix());
+			atran->SetOffset(motb->GetOffset());
+		}
+    }
+  	else if(mat != std::string::npos)
+		{
+		// Read the matrix
+		itk::Matrix<double,VDim+1,VDim+1> matrix;
+		matrix = ReadMatrix(FileMatrix);
+
+		// Get the transform matrix and the offset vector
+		vnl_matrix<double> A_ras = matrix.GetVnlMatrix().extract(VDim, VDim); 
+		vnl_vector<double> b_ras = matrix.GetVnlMatrix().extract(VDim, 1, 0, VDim).get_column(0);
+
+		// Extrernal matrices are assumed to be RAS to RAS, so we must convert to LPS to LPS
+		vnl_vector<double> v_lps_to_ras(VDim, 1.0);
+		v_lps_to_ras[0] = v_lps_to_ras[1] = -1.0;
+		vnl_diag_matrix<double> m_lps_to_ras(v_lps_to_ras);
+		vnl_matrix<double> A_lps = m_lps_to_ras * A_ras * m_lps_to_ras;
+		vnl_vector<double> b_lps = m_lps_to_ras * b_ras;
+
+		// Stick these into the itk matrix/vector
+		itk::Matrix<double,VDim,VDim> amat(A_lps);
+		itk::Vector<double, VDim> aoff;
+		aoff.SetVnlVector(b_lps);
+
+		// Put the values in the transform
+		atran->SetMatrix(amat);
+		atran->SetOffset(aoff);
+    }
 
 	// Build the resampling filter
-	typedef itk::ResampleImageFilter<ImageType, ImageType> ResampleFilterType;
+	typedef itk::ResampleImageFilter<ImageType,ImageType> ResampleFilterType;
 	typename ResampleFilterType::Pointer fltSample = ResampleFilterType::New();
+	using LinearInterpolatorType = itk::LinearInterpolateImageFunction<ImageType, double>;
+  	LinearInterpolatorType::Pointer interpolator = LinearInterpolatorType::New();
 
 	// Initialize the resampling filter with an identity transform
 	fltSample->SetInput(MovingImage);
 	fltSample->SetTransform(atran);
-
+  
 	// Set the unknown intensity to positive value
 	fltSample->SetDefaultPixelValue(0);
 
 	// Set the interpolator
-	using FixedLinearInterpolatorType = itk::LinearInterpolateImageFunction<ImageType, double>;
-	fltSample->SetInterpolator(FixedLinearInterpolatorType::New());
+	fltSample->SetInterpolator(interpolator);
 
 	// Calculate where the transform is taking things
 	itk::ContinuousIndex<double, VDim> idx[3];
-	idx->Fill(0.0);
-	for (size_t i = 0; i < VDim; i++)
-	{
+	for(size_t i = 0; i < VDim; i++){
 		idx[0][i] = 0.0;
 		idx[1][i] = FixeImage->GetBufferedRegion().GetSize(i) / 2.0;
 		idx[2][i] = FixeImage->GetBufferedRegion().GetSize(i) - 1.0;
 	}
-	for (size_t j = 0; j < VDim; j++)
-	{
+  	for(size_t j = 0; j < VDim; j++)
+    {
 		itk::ContinuousIndex<double, VDim> idxmov;
 		itk::Point<double, VDim> pref, pmov;
 		FixeImage->TransformContinuousIndexToPhysicalPoint(idx[j], pref);
 		pmov = atran->TransformPoint(pref);
 		MovingImage->TransformPhysicalPointToContinuousIndex(pmov, idxmov);
-	}
+    }
 
+  	vnl_matrix<double> amat(VDim+1, VDim+1, 0); 
+ 	vnl_vector<double> atmp(VDim+1, 0); 
+  	amat.update(atran->GetMatrix().GetVnlMatrix(), 0, 0);
+  	atmp.update(atran->GetOffset().GetVnlVector(), 0);
+  	amat.set_column(VDim, atmp);
 
 	// Set the spacing, origin, direction of the output
 	fltSample->UseReferenceImageOn();
-	fltSample->SetReferenceImage(FixeImage);
+	fltSample->SetReferenceImage(MovingImage);
 	fltSample->Update();
+    
 
 	return fltSample->GetOutput();
 }
