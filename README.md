@@ -10,8 +10,8 @@ This algorithm creates models of 3D molds with slits guiding the cutting to extr
 Cuts can be manually positioned or automatically using Powell's method. In the latter case, the algorithm finds 6 cuts to trim the tissue to fit into a 50mm cylindrical holder.
 
 ## How to use the algorithm
-  * Automatic
+### Automatic
   blab
   
-  * Manual
+### Manual
 sa
