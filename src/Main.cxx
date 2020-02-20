@@ -154,6 +154,7 @@ int OptimizationMethod(std::string folder){
 					std::cerr << "Error deleting " << file << std::endl;
 				}
 			}
+		}
 		else if(file.find("\\plan0") != std::string::npos){
 			if(!add_roi) {
 				try {
