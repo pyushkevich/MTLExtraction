@@ -22,7 +22,7 @@ $ make
 ### Automatic version
 *INPUT:* 
 
-Path to a folder countaining:
+Path to a folder containing:
  * 7T MRI scan of a formalin-fixed hemisphere named **hemisphere.nii.gz**
  * segmentation of the hemisphere named **hemisphere_seg.nii.gz**
  * segmentation of the MTL ROI named **mtl_seg.nii.gz**
@@ -31,9 +31,9 @@ Path to a folder countaining:
 ```sh
 $ MTLExtraction path/to/files
 ```
-*Output:* 
+*OUTPUTS:* 
 
-Folder countaining:
+Folder containing:
  * Two files for each mold, depending on whether it is a right or left hemisphere **slitmold_hem*i*.nii.gz**, **slitmold_mtl*i*.nii.gz** 
  * files of the cuts **cut*i*.nii.gz**
  * files of the reoriented segmentations **Oriented*Part*.nii.gz**
@@ -43,7 +43,7 @@ Folder countaining:
 ### Interactive version
 *INPUT:* 
 
-Path to a folder countaining:
+Path to a folder containing:
  * 7T MRI scan of a formalin-fixed hemisphere named **hemisphere.nii.gz**
  * segmentation of the hemisphere named **hemisphere_seg.nii.gz**
  * transformation matrices to orient the plan named **mold*i*_*k*.mat** or **mold*i*_*k*.txt** *(i is 1 or 2 depending on the mold on which they should appear, k can take any value)*
@@ -52,6 +52,17 @@ To determine the orientation of the cuts with ITK-Snap, run a first time the pro
 ```sh
 $ MTLExtraction path/to/files manual
 ```
-This step will create a new folder and two files **planP.nii.gz** and **planN.nii.gz**. **planN** is representing the cut and 
+This step will create a new folder and an image **plan.nii.gz** representing the cut to orient. After saving the transformation matrices in the original folder (containing files of the hemisphere).
 
+Then, run the program a second time:
+```sh
+$ MTLExtraction path/to/files manual
+```
 
+*OUTPUTS:*
+
+Folder containing:
+ * Two files for each mold, depending on whether it is a right or left hemisphere **slitmold_hem*i*.nii.gz**, **slitmold_mtl*i*.nii.gz** 
+ * files of the cuts **cut*i*.nii.gz**
+ * resulting tissue after using the first mold **MTL.nii.gz**
+ * resulting tissue after using the two molds **finalMTL.nii.gz**
