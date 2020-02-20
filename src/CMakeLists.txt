@@ -22,4 +22,4 @@ add_executable(MTLExtraction Main.cxx)
 
 target_link_libraries(MTLExtraction PUBLIC ${ITK_LIBRARIES} lib)
 
-install (TARGETS MTLExtraction RUNTIME DESTINATION C:/Users/jadel/bin)
+install (TARGETS MTLExtraction RUNTIME DESTINATION bin)
