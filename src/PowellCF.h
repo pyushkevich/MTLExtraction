@@ -313,7 +313,7 @@ public:
 	}
 };
 
-int OrientationCylinderPowell();
+int OrientationCylinderPowell(bool roi);
 int OrientationCutsPowell();
 int OrientationFirstCutPowell();
 

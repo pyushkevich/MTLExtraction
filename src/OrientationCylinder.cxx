@@ -4,7 +4,7 @@
 
 // Orient the cylinder until the MTL fits the best into it. This position will deterinate the volume of tissue needed to be cut.
 
-int OrientationCylinderPowell() {
+int OrientationCylinderPowell(bool roi) {
 
 	using OptimizerType = itk::PowellOptimizer;
 
@@ -93,9 +93,12 @@ int OrientationCylinderPowell() {
 	Write("OrientedHemisphereSeg.nii.gz", hem_solSeg);
 	Write("OrientedMTL.nii.gz", mtl_sol);
 
-	ImagePointer img_roi = ReadImage("roi_seg.nii.gz");
-	ImagePointer roi_sol = ResliceImage(costFunction->m_hem, img_roi, RotationAxis::YROTATION, finalAngleInRadians);
-	Write("OrientedROI.nii.gz", roi_sol);
+	if(roi){
+		ImagePointer img_roi = ReadImage("roi_seg.nii.gz");
+		ImagePointer roi_sol = ResliceImage(costFunction->m_hem, img_roi, RotationAxis::YROTATION, finalAngleInRadians);
+		Write("OrientedROI.nii.gz", roi_sol);
+	}
+	
 
 	return EXIT_SUCCESS;
 }

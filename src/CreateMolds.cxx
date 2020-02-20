@@ -12,8 +12,8 @@ void CreateMolds(std::vector<ImagePointer> cuts, int nb_cuts_mold1) {
 		cuts[i] = SetOriginVoxel(cuts[i], "50%");
 	}
 
-	std::cout << "\nFirst Mold" << std::endl;
-
+	//________________________________________First Mold_________________________________________
+	//___________________________________________________________________________________________
 	//Dilation of the image: mold will have the shape of the hemisphere
 	ImageType::SizeType radius; radius.Fill(35);
 	ImagePointer ref_mold = MorphologyTransformation(iref, false, 1, radius);
@@ -21,7 +21,6 @@ void CreateMolds(std::vector<ImagePointer> cuts, int nb_cuts_mold1) {
 	// ImagePointer ref_mold = ReadImage("ref_mold.nii.gz");
 
 	// Solution 1
-	std::cout << "		Solution 1" << std::endl;
 	// Reorient the segmentation before the extrusion
 	ImagePointer hemSeg1 = Thresh(ResliceImage(iref, 0.0, -9.0, 0.0), -1, 0, 1, 0);
 	hemSeg1 = SwapDimensions_OrientWorker(hemSeg1, "PRI");
@@ -52,7 +51,6 @@ void CreateMolds(std::vector<ImagePointer> cuts, int nb_cuts_mold1) {
 
 
 	// Solution 2
-	std::cout << "		Solution 2" << std::endl;
 	ImagePointer hemSeg2 = Thresh(ResliceImage(iref, 0.0, 9.0, 0.0), -1, 0, 1, 0);
 	hemSeg2 = SwapDimensions_OrientWorker(hemSeg2, "ARI");
 	ImagePointer iExtrude2 = ExtrudeSegmentation(hemSeg2);
@@ -118,13 +116,12 @@ void CreateMolds(std::vector<ImagePointer> cuts, int nb_cuts_mold1) {
 	Write("slitmold_hem2.nii.gz", slitmold2);
 	
 
-	// Second mold for resulting piece of tissue
-	std::cout << "\nSecond mold" << std::endl;
+	//_______________________________________Second Mold_________________________________________
+	//___________________________________________________________________________________________
 	ImagePointer mtlSeg = ReadImage("MTLSeg.nii.gz");
 	mtlSeg = SetOriginVoxel(mtlSeg, "50%");
 
 	// Solution 1
-	std::cout << "		Solution 1" << std::endl;
 	mtlSeg = SwapDimensions_OrientWorker(mtlSeg, "ILP");
 	ImagePointer iExtMTL = ExtrudeSegmentation(Thresh(mtlSeg, -1, 0, 1, 0));
 	ImagePointer mold1_mtl = SwapDimensions_OrientWorker(iExtMTL, "LPI");
@@ -132,7 +129,6 @@ void CreateMolds(std::vector<ImagePointer> cuts, int nb_cuts_mold1) {
 	// ImagePointer mold1_mtl = ReadImage("mold1_mtl.nii.gz");
 
 	// Solution 2
-	std::cout << "		Solution 2" << std::endl;
 	mtlSeg = SwapDimensions_OrientWorker(mtlSeg, "SLP");
 	iExtMTL = ExtrudeSegmentation(Thresh(mtlSeg, -1, 0, 1, 0));
 	ImagePointer mold2_mtl = SwapDimensions_OrientWorker(iExtMTL, "LPI");
