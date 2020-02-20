@@ -21,7 +21,6 @@ $ make
 
 ### Automatic version
 *INPUT:* 
-
 Path to a folder containing:
  * 7T MRI scan of a formalin-fixed hemisphere named **hemisphere.nii.gz**
  * segmentation of the hemisphere named **hemisphere_seg.nii.gz**
@@ -32,7 +31,6 @@ Path to a folder containing:
 $ MTLExtraction path/to/files
 ```
 *OUTPUTS:* 
-
 Folder containing:
  * Two files for each mold, depending on whether it is a right or left hemisphere **slitmold_hem*i*.nii.gz**, **slitmold_mtl*i*.nii.gz** 
  * files of the cuts **cut*i*.nii.gz**
@@ -42,7 +40,6 @@ Folder containing:
  
 ### Interactive version
 *INPUT:* 
-
 Path to a folder containing:
  * 7T MRI scan of a formalin-fixed hemisphere named **hemisphere.nii.gz**
  * segmentation of the hemisphere named **hemisphere_seg.nii.gz**
@@ -60,7 +57,6 @@ $ MTLExtraction path/to/files manual
 ```
 
 *OUTPUTS:*
-
 Folder containing:
  * Two files for each mold, depending on whether it is a right or left hemisphere **slitmold_hem*i*.nii.gz**, **slitmold_mtl*i*.nii.gz** 
  * files of the cuts **cut*i*.nii.gz**
