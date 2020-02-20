@@ -46,7 +46,7 @@ Folder containing:
 Path to a folder containing:
  * 7T MRI scan of a formalin-fixed hemisphere named **hemisphere.nii.gz**
  * segmentation of the hemisphere named **hemisphere_seg.nii.gz**
- * transformation matrices to orient the plan named **mold*i*_*k*.mat** or **mold*i*_*k*.txt** *(i is 1 or 2 depending on the mold on which they should appear, k can take any value)*
+ * transformation matrices to orient the plan named **mold*i*_*k*.mat** or **mold*i*_*k*.txt** *(i take the value (1 or 2) corresponding to the mold on which they should appear; k can take any value)*
 
 To determine the orientation of the cuts with ITK-Snap, run a first time the program:
 ```sh
