@@ -19,12 +19,25 @@ $ make
 ## How to use the algorithm
 
 ### Automatic version
-*INPUTS:* 
+*INPUT:* 
+
 Path to a folder countaining:
  * 7T MRI scan of a formalin-fixed hemisphere named **hemisphere.nii.gz**
  * segmentation of the hemisphere named **hemisphere_seg.nii.gz**
  * segmentation of the MTL ROI named **mtl_seg.nii.gz**
  * (optional) segmentation of the second ROI to be spared during cutting (e.g. frontal lobe) named **roi_seg.nii.gz**
-  
+
+```sh
+$ MTLExtraction path/to/files
+```
+*Output:* 
+
+Folder countaining:
+ * files of the cuts named **cut*i*.nii.gz**
+ * files of the reoriented segmentations named **Oriented*Part*.nii.gz**
+ * resulting tissue after using the first mold named **MTL.nii.gz**
+ * resulting tissue after using the two molds named **finalMTL.nii.gz**
+ 
+
 ### Interactive version
 
