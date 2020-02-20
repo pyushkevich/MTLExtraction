@@ -13,14 +13,18 @@ Cuts can be manually positioned or automatically using Powell's method. In the l
 ## Install
 ```sh
 $ git clone https://github.com/JLasserv/MTLExtraction.git
-$ cmake -DCMAKE_BUILD_TYPE=Release ..
 $ make
 ```
 
 ## How to use the algorithm
 
 ### Automatic version
-
+*INPUTS:* 
+Path to a folder countaining:
+ * 7T MRI scan of a formalin-fixed hemisphere named **hemisphere.nii.gz**
+ * segmentation of the hemisphere named **hemisphere_seg.nii.gz**
+ * segmentation of the MTL ROI named **mtl_seg.nii.gz**
+ * (optional) segmentation of the second ROI to be spared during cutting (e.g. frontal lobe) named **roi_seg.nii.gz**
   
 ### Interactive version
-sa
+
