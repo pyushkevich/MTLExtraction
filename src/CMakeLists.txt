@@ -1,9 +1,3 @@
-cmake_minimum_required(VERSION 3.0)
-project(MTLExtraction)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE Release)
-
 # Find ITK.
 find_package(ITK REQUIRED)
 
