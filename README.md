@@ -16,6 +16,8 @@ With cmake on **Unix**:
 ```sh
 $ git clone https://github.com/JLasserv/MTLExtraction.git
 $ cd MTLExtraction
+$ mkdir Build
+$ cd Build
 $ cmake ..
 $ make
 ```
