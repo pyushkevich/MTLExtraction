@@ -12,15 +12,31 @@ This algorithm creates models of 3D molds with slits guiding the cutting to extr
 Cuts can be manually positioned or automatically using Powell's method. In the latter case, the algorithm finds 6 cuts to trim the tissue to fit into a 50mm cylindrical holder.
 
 ## Install
+With cmake on **Unix**:
 ```sh
 $ git clone https://github.com/JLasserv/MTLExtraction.git
+$ cd MTLExtraction
+$ cmake ..
 $ make
 ```
+
+With Visual Studio on **Windows**:
+```sh
+$ git clone https://github.com/JLasserv/MTLExtraction.git
+```
+* Launch the CMake GUI
+* Next to "Where is the source code:", click "Browse Source..." and navigate to where you cloned the repository with Git.
+* Next to "Where to build the binaries:", select "Browse Build..." and select a place to build.
+* Click "Configure", and then specify "Visual Studio" as the generator and "x64" as the platform for this project.
+* Click "Generate".
+* Click "Open Project". This will start a new Visual Studio instance.
+* From the Build menu, choose "Build Solution" (or "Build ALL_BUILD")
+
 
 ## How to use the algorithm
 
 ### Automatic version
-*INPUT:* 
+*__INPUT:__* 
 Path to a folder containing:
  * 7T MRI scan of a formalin-fixed hemisphere named **hemisphere.nii.gz**
  * segmentation of the hemisphere named **hemisphere_seg.nii.gz**
@@ -30,7 +46,7 @@ Path to a folder containing:
 ```sh
 $ MTLExtraction path/to/files
 ```
-*OUTPUTS:* 
+*__OUTPUTS:__* 
 Folder containing:
  * Two files for each mold, depending on whether it is a right or left hemisphere **slitmold_hem*i*.nii.gz**, **slitmold_mtl*i*.nii.gz** 
  * files of the cuts **cut*i*.nii.gz**
@@ -39,7 +55,7 @@ Folder containing:
  * resulting tissue after using the two molds **finalMTL.nii.gz**
  
 ### Interactive version
-*INPUT:* 
+*__INPUT:__* 
 Path to a folder containing:
  * 7T MRI scan of a formalin-fixed hemisphere named **hemisphere.nii.gz**
  * segmentation of the hemisphere named **hemisphere_seg.nii.gz**
@@ -56,7 +72,7 @@ Then, run the program a second time:
 $ MTLExtraction path/to/files manual
 ```
 
-*OUTPUTS:*
+*__OUTPUTS:__*
 Folder containing:
  * Two files for each mold, depending on whether it is a right or left hemisphere **slitmold_hem*i*.nii.gz**, **slitmold_mtl*i*.nii.gz** 
  * files of the cuts **cut*i*.nii.gz**
