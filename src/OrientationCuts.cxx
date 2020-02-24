@@ -186,12 +186,10 @@ int OrientationCutsPowell() {
 
 		//Cut useful added to table countaining the cuts
 		if ((V_before - V_new) > 1000){
-			std::cout << "Cut " << ind_cut << " useful." << std::endl;
 			V_before = V_new;
 			new_table_cuts.push_back(realCut);
 		}
 		else{
-			std::cout << "Cut " << ind_cut << " not useful." << std::endl;
 			new_table_plans.pop_back();
 		}
 	}
