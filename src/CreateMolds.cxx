@@ -64,7 +64,7 @@ void CreateMolds(std::vector<ImagePointer> cuts, int nb_cuts_mold1) {
 	// Creation of higher contours, to make the cutting easier
 	ImagePointer contour2 = SwapDimensions_OrientWorker(ref_mold, "AIR");
 	ImagePointer contour_ext2 = ExtrudeSegmentation(Thresh(contour2, -1, 0, 1, 0));
-	radius.Fill(0); radius[2] = 15;
+	radius.Fill(0); radius[2] = 18;
 	contour2 = SwapDimensions_OrientWorker(contour2, "LPI");
 	contour2 = MorphologyTransformation(contour_ext2, false, 1, radius);
 	contour2 = SwapDimensions_OrientWorker(contour2, "LPI");
