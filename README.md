@@ -67,9 +67,7 @@ To determine the orientation of the cuts with ITK-Snap, run a first time the pro
 ```sh
 $ MTLExtraction path/to/files manual
 ```
-This step will create a new folder and an image **plan.nii.gz** representing the cut to orient. After saving the transformation matrices in the original folder (containing files of the hemisphere).
-
-Then, run the program a second time:
+This step will create a new folder and an image **plan.nii.gz** representing the cut to orient. After saving the transformation matrices in the original folder (containing files of the hemisphere), run the program a second time to obtain the molds:
 ```sh
 $ MTLExtraction path/to/files manual
 ```
