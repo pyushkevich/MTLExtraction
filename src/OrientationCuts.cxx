@@ -235,6 +235,7 @@ int OrientationCutsPowell() {
 	ImagePointer hemSeg = ReadImage("OrientedHemisphereSeg.nii.gz");
 	// Piece supposed to result after using the two molds
 	ImagePointer finalMTL = BinaryMathOperation(MULTIPLY, hem, interCuts);
+	finalMTL = SetOriginVoxel(finalMTL, "50%");
 	Write("finalMTL.nii.gz", finalMTL);
 
 	// Remove 2nd mold cuts to obtain the image of the piece of tissue resulting after using the 1st mold
@@ -244,7 +245,9 @@ int OrientationCutsPowell() {
 	
 	ImagePointer interCutsMold1 = IntersectionImages(new_table_plans);
 	ImagePointer MTL = BinaryMathOperation(MULTIPLY, hem, interCutsMold1);
+	MTL = SetOriginVoxel(MTL, "50%");
 	ImagePointer MTLSeg = BinaryMathOperation(MULTIPLY, hemSeg, interCutsMold1);
+	MTLSeg = SetOriginVoxel(MTLSeg, "50%");
 	// Piece of tissue supposed to result after using the 1st mold
 	Write("MTL.nii.gz", MTL);
 	Write("MTLSeg.nii.gz", MTLSeg);
