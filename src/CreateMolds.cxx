@@ -298,8 +298,8 @@ void CreateMTLMold(std::vector<ImagePointer> cuts, int nb_cuts_mold1) {
 
 	ImagePointer slitmold_mtl1 = mold1_mtl;
 	ImagePointer slitmold_mtl2 = mold2_mtl;
-	ThreshCut1 = Thresh(CMP2[2], -70, 1000, 1, 0);
-	ThreshCut2 = Thresh(CMP2[2], 35, 1000, 0, 1);
+	ImagePointer ThreshCut1 = Thresh(CMP2[2], -70, 1000, 1, 0);
+	ImagePointer ThreshCut2 = Thresh(CMP2[2], 35, 1000, 0, 1);
 	ImagePointer cut1, cut2;
 
 	for (int i = nb_cuts_mold1; i < cuts.size(); i++) {
